@@ -104,7 +104,7 @@ The frontend for this Unraid plugin consists of `.page` files, which are `php` f
 
 This project uses Syncfusion ej2-grids 31.2.5. Before implementing new features or customizations, **you must** consult the official documentation to see if a built-in solution exists. This is to avoid complication as well as wasted time and effort custom coding functions or features that are already natively handled by the Syncfusion ej2-grids library.
 
-- **`dirt-ej2-grids.page`**:
+- **`dirt-tables.page`**:
 
     - **Library**: Syncfusion ej2-grids v31.2.5
 
