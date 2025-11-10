@@ -102,13 +102,13 @@ The frontend for this Unraid plugin consists of `.page` files, which are `php` f
 
 ### Frontend Libraries
 
-This project uses Tabulator 6.3.1. Before implementing new features or customizations, **you must** consult the official documentation to see if a built-in solution exists. This is to avoid complication as well as wasted time and effort custom coding functions or features that are already natively handled by the Tabulator library.
+This project uses Syncfusion ej2-grids 31.2.5. Before implementing new features or customizations, **you must** consult the official documentation to see if a built-in solution exists. This is to avoid complication as well as wasted time and effort custom coding functions or features that are already natively handled by the Syncfusion ej2-grids library.
 
-- **`dirt-tabulator.page`**:
+- **`dirt-ej2-grids.page`**:
 
-    - **Library**: Tabulator v6.3.1
+    - **Library**: Syncfusion ej2-grids v31.2.5
 
-    - **Documentation**: [https://tabulator.info/docs/6.3](https://tabulator.info/docs/6.3 "null")
+    - **Documentation**: [https://help.syncfusion.com/](https://help.syncfusion.com/ "null")
 
 
 ### Running Tests (Playwright)
