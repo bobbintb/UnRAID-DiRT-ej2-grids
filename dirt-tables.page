@@ -2,3 +2,115 @@ Menu="DiskUtilities"
 Title="Deduplication in Real-Time"
 Icon="fa-search-minus"
 ---
+<link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js" type="text/javascript"></script>
+
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .flex-container {
+    display: flex;
+    height: calc(100vh - 150px); /* Adjust for header/footer if necessary */
+  }
+  .grid-container {
+    flex: 1;
+    padding: 10px;
+    height: 100%;
+  }
+</style>
+
+<div class="flex-container">
+    <div class="grid-container">
+        <h2>Grouped by Hash</h2>
+        <div id="GridLeft"></div>
+    </div>
+    <div class="grid-container">
+        <h2>All Files</h2>
+        <div id="GridRight"></div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    let socket;
+    let gridLeft, gridRight;
+    let sharedDataSource = [];
+
+    // Initialize Left Grid
+    gridLeft = new ej.grids.Grid({
+        dataSource: sharedDataSource,
+        allowGrouping: true,
+        groupSettings: { columns: ['hash'] },
+        columns: [
+            { field: 'path', headerText: 'Path', width: 250 },
+            { field: 'size', headerText: 'Size', width: 100, textAlign: 'Right', format: 'N0' },
+            { field: 'hash', headerText: 'Hash', width: 200 },
+            { field: 'last_modified', headerText: 'Last Modified', width: 150, format: 'yMd' }
+        ],
+        height: 600
+    });
+    gridLeft.appendTo('#GridLeft');
+
+    // Initialize Right Grid
+    gridRight = new ej.grids.Grid({
+        dataSource: sharedDataSource,
+        columns: [
+            { field: 'path', headerText: 'Path', width: 'auto' }
+        ],
+        height: 600
+    });
+    gridRight.appendTo('#GridRight');
+
+    function connect() {
+      socket = new WebSocket(`ws://<?= $_SERVER["SERVER_ADDR"] ?>:41820?clientId=dirt-tables.page`);
+
+      socket.onopen = function() {
+        console.log("Tables Tab: WebSocket connection established.");
+        dirtySock('getDuplicates', null);
+      };
+
+      socket.onmessage = function(event) {
+        console.log("Tables Tab: Message from server: ", event.data);
+        const data = JSON.parse(event.data);
+        if (data.action === 'duplicateData') {
+          sharedDataSource = data.payload;
+          gridLeft.dataSource = sharedDataSource;
+          gridLeft.refresh();
+          gridRight.dataSource = sharedDataSource;
+          gridRight.refresh();
+        }
+      };
+
+      socket.onclose = function(event) {
+        console.log("Tables Tab: WebSocket connection closed. Reconnecting in 1 second...");
+        setTimeout(connect, 1000);
+      };
+
+      socket.onerror = function(error) {
+        console.error("Tables Tab: WebSocket error: ", error);
+        socket.close();
+      };
+    }
+
+    function dirtySock(action, data) {
+        const message = {
+          clientId: "dirt-tables.page",
+          action: action,
+          data: data
+        };
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify(message));
+          console.log(`Tables Tab: Sent action '${action}' with data:`, data);
+        } else {
+          console.error("Tables Tab: WebSocket is not connected. Message not sent:", message);
+        }
+    }
+
+    // Connect on page load
+    connect();
+});
+</script>
